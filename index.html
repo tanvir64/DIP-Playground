@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Image Processing Playground</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Image Processing Playground</h1>
+    <p>Load an image, pick an operation, adjust its parameters and compare before and after. Open the code panel for the matching Python (OpenCV and NumPy).</p>
+  </header>
+
+  <div class="app">
+    <aside class="side">
+      <section class="card" aria-labelledby="h-img">
+        <h2 id="h-img">Image</h2>
+        <input id="file" class="sr" type="file" accept="image/*">
+        <label class="drop" id="drop" for="file"><strong>Upload an image</strong><span>or drop a file here</span></label>
+        <p class="sub">Or use a sample</p>
+        <div class="chips" id="samples"></div>
+        <p class="meta" id="srcmeta"></p>
+      </section>
+
+      <section class="card" aria-labelledby="h-op">
+        <h2 id="h-op">Operation</h2>
+        <div id="ops"></div>
+      </section>
+
+      <section class="card" aria-labelledby="h-par">
+        <h2 id="h-par">Parameters</h2>
+        <p class="desc" id="desc"></p>
+        <div id="params"></div>
+        <div class="btns">
+          <button class="btn" id="reroll" type="button" hidden>Re-roll noise</button>
+          <button class="btn" id="reset" type="button">Reset values</button>
+        </div>
+      </section>
+    </aside>
+
+    <main class="main">
+      <section class="card">
+        <div class="views">
+          <div class="view" id="origView">
+            <h3>Original <small id="origSize"></small></h3>
+            <canvas id="orig" width="560" height="400" role="img" aria-label="Original image"></canvas>
+          </div>
+          <div class="view">
+            <h3><span id="procTitle">Processed</span> <small id="procSize"></small></h3>
+            <canvas id="proc" width="560" height="400" role="img" aria-label="Processed image"></canvas>
+            <p class="info" id="info" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <details class="card" id="codeBox">
+        <summary>Python code <small>OpenCV · NumPy</small></summary>
+        <div class="nb">
+          <div class="nbbar">
+            <p>The snippet uses the current parameter values. The page runs a JavaScript version of each operation, so pixel values can differ from OpenCV by a gray level or two.</p>
+            <button class="btn" id="copyAll" type="button">Copy all</button>
+          </div>
+          <div id="cells"></div>
+        </div>
+      </details>
+    </main>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
