@@ -1,69 +1,134 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Image Processing Playground</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenCV Image Processing Playground</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<div class="wrap">
-  <header class="top">
-    <h1>Image Processing Playground</h1>
-    <div class="source" aria-label="Image source">
-      <input id="file" class="sr" type="file" accept="image/*">
-      <label class="drop" id="drop" for="file"><span class="drop-icon" aria-hidden="true">↑</span><strong>Upload image</strong></label>
-      <div class="chips samples" id="samples" aria-label="Sample images"></div>
+  <header class="app-header">
+    <div class="header-title">
+      <h1>Image Processing Playground</h1>
+      <span class="badge">OpenCV (cv2) Reference</span>
+    </div>
+    <div class="image-controls">
+      <label class="btn btn-primary" for="imageUpload">
+        Upload Image
+        <input type="file" id="imageUpload" accept="image/*" hidden />
+      </label>
+      <div class="sample-group">
+        <span class="label-muted">Samples:</span>
+        <button class="btn btn-outline sample-btn active" data-sample="shapes">Shapes & Gradients</button>
+        <button class="btn btn-outline sample-btn" data-sample="landscape">Low-Contrast Scene</button>
+        <button class="btn btn-outline sample-btn" data-sample="grid">Resolution Grid</button>
+        <button class="btn btn-outline" id="randomSampleBtn" title="Load a random sample">Random</button>
+      </div>
     </div>
   </header>
 
-  <div class="app">
-    <aside class="side" aria-label="Controls">
-      <section class="panel" aria-labelledby="h-op">
-        <h2 id="h-op">Operation</h2>
-        <div id="ops"></div>
-      </section>
-
-      <section class="panel" aria-labelledby="h-par">
-        <h2 id="h-par">Parameters</h2>
-        <p class="desc" id="desc"></p>
-        <div id="params"></div>
-        <div class="btns">
-          <button class="btn" id="reroll" type="button" hidden>Re-roll noise</button>
-          <button class="btn" id="reset" type="button">Reset values</button>
-        </div>
-      </section>
-    </aside>
-
-    <main class="main">
-      <section class="viewer" aria-label="Results">
-        <div class="views">
-          <div class="view" id="origView">
-            <h3><span>Original</span> <small id="origSize"></small></h3>
-            <canvas id="orig" width="560" height="400" role="img" aria-label="Original image"></canvas>
-          </div>
-          <div class="view">
-            <h3><span id="procTitle">Processed</span> <small id="procSize"></small></h3>
-            <canvas id="proc" width="560" height="400" role="img" aria-label="Processed image"></canvas>
+  <main class="container">
+    <!-- Operation Selector Pills -->
+    <section class="card operations-panel">
+      <div class="category-grid">
+        <div class="category-block">
+          <h3>Noise & Point Operations</h3>
+          <div class="pill-group">
+            <button class="pill active" data-op="gaussian_noise">Gaussian noise</button>
+            <button class="pill" data-op="salt_pepper">Salt & pepper</button>
+            <button class="pill" data-op="gamma">Gamma correction</button>
+            <button class="pill" data-op="brightness_contrast">Brightness / contrast</button>
+            <button class="pill" data-op="log_transform">Log transform</button>
+            <button class="pill" data-op="inverse">Inverse (negative)</button>
           </div>
         </div>
-        <div class="foot"><p class="meta" id="srcmeta"></p><p class="info" id="info" aria-live="polite"></p></div>
-      </section>
 
-      <details class="code" id="codeBox">
-        <summary>Python code <small>OpenCV · NumPy</small></summary>
-        <div class="nb">
-          <div class="nbbar">
-            <p>The snippet uses the current parameter values. The page runs a JavaScript version of each operation, so pixel values can differ from OpenCV by a gray level or two.</p>
-            <button class="btn" id="copyAll" type="button">Copy all</button>
+        <div class="category-block">
+          <h3>Filtering & Sharpening</h3>
+          <div class="pill-group">
+            <button class="pill" data-op="gaussian_blur">Gaussian blur</button>
+            <button class="pill" data-op="box_blur">Box blur</button>
+            <button class="pill" data-op="median_blur">Median blur</button>
+            <button class="pill" data-op="unsharp_mask">Unsharp mask</button>
           </div>
-          <div id="cells"></div>
         </div>
-      </details>
-    </main>
-  </div>
-</div>
-<script src="app.js"></script>
+
+        <div class="category-block">
+          <h3>Edges & Thresholding</h3>
+          <div class="pill-group">
+            <button class="pill" data-op="sobel">Sobel edges</button>
+            <button class="pill" data-op="canny">Canny edges</button>
+            <button class="pill" data-op="binary_thresh">Binary threshold</button>
+            <button class="pill" data-op="otsu_thresh">Otsu's threshold</button>
+          </div>
+        </div>
+
+        <div class="category-block">
+          <h3>Tone & Morphology</h3>
+          <div class="pill-group">
+            <button class="pill" data-op="grayscale">Grayscale</button>
+            <button class="pill" data-op="hist_eq">Histogram equalization</button>
+            <button class="pill" data-op="bit_plane">Bit-plane slicing</button>
+            <button class="pill" data-op="clahe">CLAHE</button>
+            <button class="pill" data-op="morphology">Morphology</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Parameter Controls -->
+      <div class="params-bar" id="paramsContainer">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- Side-by-Side Image Viewer -->
+    <section class="viewer-grid">
+      <div class="card canvas-card">
+        <div class="canvas-header">
+          <span class="canvas-title">Original Image</span>
+          <span class="dimensions-tag" id="origDimensions">512 × 360</span>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="originalCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="card canvas-card">
+        <div class="canvas-header">
+          <span class="canvas-title" id="processedTitle">Processed: Gaussian noise</span>
+          <button class="btn btn-sm btn-outline" id="downloadBtn">Download PNG</button>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="processedCanvas"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Collapsible Notebook-Style Python Code Section -->
+    <section class="card notebook-section">
+      <div class="notebook-header" id="codeToggleBtn" role="button" tabindex="0" aria-expanded="false">
+        <div class="notebook-title">
+          <span class="chevron" id="codeChevron">▶</span>
+          <span>Python (OpenCV) Implementation</span>
+          <span class="code-hint">Click to expand notebook cell</span>
+        </div>
+      </div>
+
+      <div class="notebook-body collapsed" id="notebookBody">
+        <div class="jupyter-cell">
+          <div class="cell-prompt">In [1]:</div>
+          <div class="cell-editor">
+            <div class="cell-toolbar">
+              <span class="lang-tag">python · opencv-python</span>
+              <button class="btn btn-sm btn-copy" id="copyCodeBtn">Copy Code</button>
+            </div>
+            <pre><code id="pythonCodeBlock"></code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
 </body>
 </html>
