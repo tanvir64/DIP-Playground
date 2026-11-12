@@ -250,7 +250,7 @@ function sampleCanvas(kind,seed){
 var SAMPLES=[['landscape','Landscape'],['shapes','Shapes'],['card','Test card'],['low','Low contrast']];
 
 /* ---------- state ---------- */
-var state={op:'noise',params:{},saved:{},seed:1,sample:'landscape'};
+var state={group:'Noise & tone',op:'noise',params:{},saved:{},seed:1,sample:'landscape'};
 var src=null; // {w,h,d}
 var origCv=$('orig'),procCv=$('proc');
 
@@ -284,14 +284,17 @@ function renderSamples(){
 function getOp(){return OPS.filter(function(o){return o.id===state.op})[0]}
 function renderOps(){
   var box=$('ops');box.innerHTML='';
-  GROUPS.forEach(function(gn){var gd=document.createElement('div');gd.className='group';gd.innerHTML='<p class="sub"></p><div class="chips"></div>';gd.firstChild.textContent=gn;
-    var cc=gd.lastChild;
-    OPS.filter(function(o){return o.group===gn}).forEach(function(o){var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=o.name;b.setAttribute('aria-pressed',String(o.id===state.op));
-      b.onclick=function(){selectOp(o.id)};cc.appendChild(b)});
-    box.appendChild(gd)})}
+  var tabs=document.createElement('div');tabs.className='tabs';tabs.setAttribute('role','tablist');
+  GROUPS.forEach(function(gn){var t=document.createElement('button');t.type='button';t.className='tab';t.textContent=gn;t.setAttribute('role','tab');t.setAttribute('aria-selected',String(gn===state.group));
+    t.onclick=function(){if(gn===state.group)return;state.group=gn;var first=OPS.filter(function(o){return o.group===gn})[0];selectOp(first.id)};tabs.appendChild(t)});
+  box.appendChild(tabs);
+  var cc=document.createElement('div');cc.className='chips opchips';
+  OPS.filter(function(o){return o.group===state.group}).forEach(function(o){var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=o.name;b.setAttribute('aria-pressed',String(o.id===state.op));
+    b.onclick=function(){selectOp(o.id)};cc.appendChild(b)});
+  box.appendChild(cc)}
 function defaults(op){var p={};op.params.forEach(function(q){p[q.key]=q.value});return p}
 function selectOp(id){
-  state.saved[state.op]=state.params;state.op=id;var op=getOp();
+  state.saved[state.op]=state.params;state.op=id;var op=getOp();state.group=op.group;
   state.params=state.saved[id]||defaults(op);renderOps();renderParams();schedule()}
 function renderParams(){
   var op=getOp(),box=$('params');box.innerHTML='';
@@ -308,7 +311,8 @@ function renderParams(){
     }else{
       var out=document.createElement('output');out.setAttribute('for',id);out.textContent=num(state.params[q.key],q.step);row.appendChild(out);
       var inp=document.createElement('input');inp.type='range';inp.id=id;inp.min=q.min;inp.max=q.max;inp.step=q.step;inp.value=state.params[q.key];
-      inp.oninput=function(){state.params[q.key]=parseFloat(inp.value);out.textContent=num(inp.value,q.step);schedule()};row.appendChild(inp)}
+      var fill=function(){inp.style.setProperty('--pct',((inp.value-inp.min)/(inp.max-inp.min)*100)+'%')};fill();
+      inp.oninput=function(){state.params[q.key]=parseFloat(inp.value);out.textContent=num(inp.value,q.step);fill();schedule()};row.appendChild(inp)}
     box.appendChild(row)})}
 
 /* ---------- processing ---------- */
@@ -353,7 +357,7 @@ function copyText(t,btn,node){
 
 /* ---------- wiring ---------- */
 $('file').onchange=function(e){loadFile(e.target.files[0]);e.target.value=''};
-['drop','origView'].forEach(function(id){var el=$(id);
+[document].forEach(function(el){
   el.addEventListener('dragover',function(e){e.preventDefault();$('drop').classList.add('dragging')});
   el.addEventListener('dragleave',function(){$('drop').classList.remove('dragging')});
   el.addEventListener('drop',function(e){e.preventDefault();$('drop').classList.remove('dragging');if(e.dataTransfer&&e.dataTransfer.files.length)loadFile(e.dataTransfer.files[0])})});
