@@ -750,6 +750,20 @@ function selectOperation(opKey) {
 
       paramsContainer.appendChild(wrapper);
     });
+
+    const resetWrapper = document.createElement("div");
+    resetWrapper.style.marginLeft = "auto";
+    resetWrapper.style.alignSelf = "center";
+
+    const resetBtn = document.createElement("button");
+    resetBtn.type = "button";
+    resetBtn.className = "btn btn-sm btn-outline";
+    resetBtn.textContent = "Reset Values";
+    resetBtn.title = "Reset parameters to default values";
+    resetBtn.addEventListener("click", () => selectOperation(opKey));
+
+    resetWrapper.appendChild(resetBtn);
+    paramsContainer.appendChild(resetWrapper);
   }
 
   runPipeline();
