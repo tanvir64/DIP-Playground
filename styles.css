@@ -411,3 +411,55 @@ pre {
     gap: 0.4rem;
   }
 }
+
+/* Collapsible Operations Panel Header */
+.ops-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding-bottom: 0.85rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: color 0.15s ease;
+}
+
+.ops-panel-header.collapsed {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.ops-panel-header:hover .ops-header-title {
+  color: var(--teal-primary);
+}
+
+.ops-header-left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.ops-header-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.active-op-badge {
+  background: var(--teal-light);
+  color: var(--teal-primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.18rem 0.65rem;
+  border-radius: var(--radius-pill);
+}
+
+.category-grid.collapsed {
+  display: none;
+}
+
+.params-bar.compact {
+  margin-top: 0.85rem;
+}

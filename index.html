@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OpenCV Image Processing Playground</title>
+  <title>OpenCV & Segmentation Image Processing Playground</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="app-header">
     <div class="header-title">
-      <h1>Image Processing Playground</h1>
-      <span class="badge">OpenCV (cv2) Reference</span>
+      <h1>Image Processing & Segmentation Playground</h1>
+      <span class="badge">OpenCV · Classical · Deep Learning</span>
     </div>
     <div class="image-controls">
       <label class="btn btn-primary" for="imageUpload">
@@ -20,6 +20,7 @@
       <div class="sample-group">
         <span class="label-muted">Samples:</span>
         <button class="btn btn-outline sample-btn active" data-sample="shapes">Shapes & Gradients</button>
+        <button class="btn btn-outline sample-btn" data-sample="cells">Overlapping Cells (Segmentation)</button>
         <button class="btn btn-outline sample-btn" data-sample="landscape">Low-Contrast Scene</button>
         <button class="btn btn-outline sample-btn" data-sample="grid">Resolution Grid</button>
         <button class="btn btn-outline" id="randomSampleBtn" title="Load a random sample">Random</button>
@@ -30,7 +31,16 @@
   <main class="container">
     <!-- Operation Selector Pills -->
     <section class="card operations-panel">
-      <div class="category-grid">
+      <div class="ops-panel-header" id="opsToggleBtn" role="button" tabindex="0" aria-expanded="true">
+        <div class="ops-header-left">
+          <span class="chevron open" id="opsChevron">▶</span>
+          <span class="ops-header-title">Operations & Segmentation Library</span>
+          <span class="active-op-badge" id="activeOpBadge">Noise & Point · Gaussian noise</span>
+        </div>
+        <span class="code-hint" id="opsToggleHint">Click to collapse</span>
+      </div>
+
+      <div class="category-grid" id="opsCategoryGrid">
         <div class="category-block">
           <h3>Noise & Point Operations</h3>
           <div class="pill-group">
@@ -73,6 +83,28 @@
             <button class="pill" data-op="morphology">Morphology</button>
           </div>
         </div>
+
+        <div class="category-block">
+          <h3>Traditional Segmentation</h3>
+          <div class="pill-group">
+            <button class="pill" data-op="kmeans_seg">K-Means clustering</button>
+            <button class="pill" data-op="region_growing">Region growing</button>
+            <button class="pill" data-op="watershed">Watershed</button>
+            <button class="pill" data-op="grabcut">GrabCut (foreground)</button>
+          </div>
+        </div>
+
+        <div class="category-block">
+          <h3>Segmentation Paradigms & SOTA</h3>
+          <div class="pill-group">
+            <button class="pill" data-op="semantic_seg">Semantic segmentation</button>
+            <button class="pill" data-op="instance_seg">Instance segmentation</button>
+            <button class="pill" data-op="panoptic_seg">Panoptic segmentation</button>
+            <button class="pill" data-op="unet_seg">U-Net (Encoder-Decoder)</button>
+            <button class="pill" data-op="sam_seg">SAM / SAM 3 (Promptable)</button>
+            <button class="pill" data-op="oneformer_seg">OneFormer (Universal)</button>
+          </div>
+        </div>
       </div>
 
       <!-- Dynamic Parameter Controls -->
@@ -86,7 +118,7 @@
       <div class="card canvas-card">
         <div class="canvas-header">
           <span class="canvas-title">Original Image</span>
-          <span class="dimensions-tag" id="origDimensions">512 × 360</span>
+          <span class="dimensions-tag" id="origDimensions">520 × 360</span>
         </div>
         <div class="canvas-wrapper">
           <canvas id="originalCanvas"></canvas>
@@ -109,7 +141,7 @@
       <div class="notebook-header" id="codeToggleBtn" role="button" tabindex="0" aria-expanded="false">
         <div class="notebook-title">
           <span class="chevron" id="codeChevron">▶</span>
-          <span>Python (OpenCV) Implementation</span>
+          <span>Python Implementation (OpenCV / PyTorch / HuggingFace)</span>
           <span class="code-hint">Click to expand notebook cell</span>
         </div>
       </div>
@@ -119,7 +151,7 @@
           <div class="cell-prompt">In [1]:</div>
           <div class="cell-editor">
             <div class="cell-toolbar">
-              <span class="lang-tag">python · opencv-python</span>
+              <span class="lang-tag" id="codeLangTag">python · opencv-python</span>
               <button class="btn btn-sm btn-copy" id="copyCodeBtn">Copy Code</button>
             </div>
             <pre><code id="pythonCodeBlock"></code></pre>
